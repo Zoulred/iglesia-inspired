@@ -62,7 +62,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage = 
         {children}
       </div>
       <footer className="mt-12 pb-8 text-center text-gray-400 dark:text-gray-500 text-sm">
-        <p>© {new Date().getFullYear()} • Built with React & Tailwind CSS</p>
+        <p>© {new Date().getFullYear()} • Iglesia Portfolio. All rights reserved.</p>
       </footer>
     </div>
   );

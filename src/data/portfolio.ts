@@ -4,11 +4,11 @@ import type { Profile, Project, Experience, Certification, Recommendation, Galle
 export const profileData: Profile = {
   name: "John Rey Iglesia",
   role: "Frontend Developer & UI/UX Designer",
-  location: "Pangasinan, Philippines",
+  location: "Sison, Philippines",
   email: "johnreyiglesia308@gmail.com",
-  avatar: "public/images/myprofile.png",
-  avatarHover: "public/images/hover.jpeg",
-  bio: "I am an aspiring Mobile UI/UX Designer and Frontend Developer driven by a passion for crafting intuitive, engaging, and user centered digital experiences. My methodology blends strong design principles with clean, efficient development, resulting in interfaces that are not only visually compelling but also highly functional and seamless.",
+  avatar: "/images/g6.jpg",
+  avatarHover: "/images/g4.jpg",
+  bio: "Aspiring Mobile UI/UX Designer and Frontend Developer driven by a passion for crafting intuitive, engaging, and user-centered digital experiences. My methodology blends strong design principles with clean, efficient frontend development, resulting in interfaces that are not only visually compelling but also highly functional and seamless.\n\nI specialize in designing clear user mobile app flows and structured system flows to ensure smooth navigation and logical interactions. By carefully mapping user journeys and refining interface details, I create experiences that are intuitive, accessible, and focused on maximizing user satisfaction.",
   socials: [
     { platform: "GitHub", url: "https://github.com/Zoulred", icon: "github" },
     { platform: "Facebook", url: "https://www.facebook.com/Zoulrediglesia", icon: "facebook" },
@@ -34,7 +34,7 @@ export const techStackData: TechStack[] = [
   },
   {
     category: "Tools",
-    skills: ["Github","Vscode","Git", "Framer", "Canva", ]
+    skills: ["Github","Vscode","Git", "Framer", "Canva","Dribbble",  ]
   }
 ];
 
@@ -52,7 +52,7 @@ export const projectsData: Project[] = [
     id: "2",
     title: "Bahay Kubo Augmented Reality App",
     description: "A capstone project showcasing augmented reality capabilities in a mobile Learning application.",
-    image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&q=80&w=800&h=450",
+    image: "",
     tags: ["Flutter", "Android Studio", "Figma", "Firebase"],
     link: "https://bahaykuboar.netlify.app/",
     
@@ -70,9 +70,9 @@ export const experienceData: Experience[] = [
   {
     id: "2",
     company: "Movie in Campus Seminar",
-    role: "Winner",
+    role: "Seminar Winner",
     period: "2025",
-    description: "Awarded for outstanding contribution and creativity in the Movie in Campus seminar organized by SUI Community Philippines."
+    description: "Awarded as a Seminar Winner in Game Development for creating the “Asawang Category” game using Gemini AI, recognized for creativity, innovation, and strong technical execution."
   },
   {
     id: "3",
@@ -82,7 +82,7 @@ export const experienceData: Experience[] = [
     description: "Developed and launched the official JRM Sison website, implementing user-friendly navigation and responsive design."
   },
    {
-    id: "5",
+    id: "4",
     company: "Bahay Kubo AR Capstone",
     role: "Mobile App Prototype",
     period: "2025",
@@ -111,9 +111,9 @@ export const certificationsData: Certification[] = [
   },
   {
     id: "2",
-    title: "Professional Scrum Master",
-    issuer: "Scrum.org",
-    date: "2021"
+    title: "Introduction to Cybersecurity",
+    issuer: "Cisco Networking Academy",
+    date: "2025"
   }
 ];
 
@@ -123,7 +123,7 @@ export const recommendationsData: Recommendation[] = [
     name: "JR Pacito",
     role: "Jrm Sison Pastor",
     content: "Working with Zoul has been a great experience. What I like about the website is it's being user friendly. Anyone can easily access and promote it to their friends and contacts. You can enjoy viewing it on either your smartphone or computer whichever is available. So wherever I go, I can easily present my personal testimony on what God is doing in our church family by getting them walk through the web for instance.",
-    avatar: "public/images/feed1.webp"
+    avatar: "images/feed1.webp"
   },
   
    
@@ -132,42 +132,42 @@ export const recommendationsData: Recommendation[] = [
 export const galleryData: GalleryItem[] = [
   {
     id: "1",
-    url: "public/images/g21.png",
+    url: "/images/g21.png",
     caption: ""
   },
   {
     id: "2",
-    url: "public/images/g2.jpg",
+    url: "/images/g2.jpg",
     caption: ""
   },
   {
     id: "3",
-    url: "public/images/g3.jpg",
+    url: "/images/g3.jpg",
     caption: ""
   },
   {
     id: "4",
-    url: "public/images/g4.jpg",
+    url: "/images/g4.jpg",
     caption: ""
   },
   {
     id: "5",
-    url: "public/images/g55.jpeg",
+    url: "/images/g55.jpeg",
     caption: ""
   },
   {
     id: "6",
-    url: "public/images/g6.jpg",
+    url: "/images/g6.jpg",
     caption: ""
   },
   {
     id: "7",
-    url: "public/images/g7.jpeg",
+    url: "/images/g7.jpeg",
     caption: ""
   },
   {
     id: "8",
-    url: "public/images/g1.jpeg",
+    url: "/images/g1.jpeg",
     caption: ""
   }
 ];
