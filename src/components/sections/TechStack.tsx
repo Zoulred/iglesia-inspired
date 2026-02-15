@@ -12,12 +12,12 @@ export const TechStack: React.FC<TechStackProps> = ({ stacks }) => {
   return (
     <Card className="mb-6">
       <CardHeader>
-        <h2 className="text-xl font-bold text-gray-900">Tech Stack</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Tech Stack</h2>
       </CardHeader>
       <CardContent className="space-y-4">
         {stacks.map((stack) => (
           <div key={stack.category}>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <h3 className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
               {stack.category}
             </h3>
             <div className="flex flex-wrap gap-2">

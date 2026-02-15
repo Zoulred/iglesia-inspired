@@ -10,10 +10,10 @@ export const AboutMe: React.FC<AboutMeProps> = ({ bio }) => {
   return (
     <Card className="mb-6">
       <CardHeader>
-        <h2 className="text-xl font-bold text-gray-900">About Me</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">About Me</h2>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-600 leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-justify">
           {bio}
         </p>
       </CardContent>

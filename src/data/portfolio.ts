@@ -2,79 +2,112 @@
 import type { Profile, Project, Experience, Certification, Recommendation, GalleryItem, TechStack } from '../types';
 
 export const profileData: Profile = {
-  name: "John Doe",
-  role: "Senior Full Stack Engineer",
-  location: "San Francisco, CA",
-  email: "john.doe@example.com",
-  avatar: "/myprofile.png",
-  avatarHover: "/myprofilehover.png",
-  bio: "I build scalable web applications with a focus on user experience and clean code. With over 8 years of experience in the industry, I specialize in React, Node.js, and Cloud Architecture.",
+  name: "John Rey Iglesia",
+  role: "Frontend Developer & UI/UX Designer",
+  location: "Pangasinan, Philippines",
+  email: "johnreyiglesia308@gmail.com",
+  avatar: "public/images/myprofile.png",
+  avatarHover: "public/images/hover.jpeg",
+  bio: "I am an aspiring Mobile UI/UX Designer and Frontend Developer driven by a passion for crafting intuitive, engaging, and user centered digital experiences. My methodology blends strong design principles with clean, efficient development, resulting in interfaces that are not only visually compelling but also highly functional and seamless.",
   socials: [
-    { platform: "GitHub", url: "https://github.com", icon: "github" },
-    { platform: "LinkedIn", url: "https://linkedin.com", icon: "linkedin" },
-    { platform: "Twitter", url: "https://twitter.com", icon: "twitter" }
+    { platform: "GitHub", url: "https://github.com/Zoulred", icon: "github" },
+    { platform: "Facebook", url: "https://www.facebook.com/Zoulrediglesia", icon: "facebook" },
+    { platform: "Instagram", url: "https://www.instagram.com/zoulred_/", icon: "instagram" },
+    { platform: "LinkedIn", url: "https://www.linkedin.com/in/iglesia/", icon: "linkedin" }
   ]
 };
 
+
 export const techStackData: TechStack[] = [
-  {
+   {
     category: "Frontend",
-    skills: ["React", "TypeScript", "Tailwind CSS", "Next.js", "Redux"]
+    skills: ["Html","CSS","Javascript", "TypeScript", "Tailwind CSS", "Next.js", ]
   },
+  {
+    category: "Design",
+    skills: ["Figma", "Adobe XD",]
+  },
+ 
   {
     category: "Backend",
-    skills: ["Node.js", "Express", "PostgreSQL", "MongoDB", "GraphQL"]
+    skills: [  "MySql",]
   },
   {
-    category: "DevOps",
-    skills: ["AWS", "Docker", "CI/CD", "Terraform", "Kubernetes"]
+    category: "Tools",
+    skills: ["Github","Vscode","Git", "Framer", "Canva", ]
   }
 ];
 
 export const projectsData: Project[] = [
   {
     id: "1",
-    title: "E-commerce Platform",
-    description: "A full-featured e-commerce solution with real-time inventory and AI-driven recommendations.",
-    image: "https://images.unsplash.com/photo-1557821552-17105176677c?auto=format&fit=crop&q=80&w=800&h=450",
-    tags: ["React", "Node.js", "PostgreSQL", "Stripe"],
-    link: "https://example.com",
-    github: "https://github.com"
+    title: "Jesus Reigns Ministries Sison Website",
+    description: "JRM Sison Church website with events and services",
+    image: "",
+    tags: ["HTML", "CSS", "JavaScript", "Email.js"],
+    link: "https://jrm-sison.netlify.app/",
+    
   },
   {
     id: "2",
-    title: "Task Management SaaS",
-    description: "Collaborative project management tool with kanban boards and automated workflows.",
+    title: "Bahay Kubo Augmented Reality App",
+    description: "A capstone project showcasing augmented reality capabilities in a mobile Learning application.",
     image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&q=80&w=800&h=450",
-    tags: ["Next.js", "TypeScript", "Prisma", "Tailwind"],
-    link: "https://example.com",
-    github: "https://github.com"
+    tags: ["Flutter", "Android Studio", "Figma", "Firebase"],
+    link: "https://bahaykuboar.netlify.app/",
+    
   }
 ];
 
 export const experienceData: Experience[] = [
   {
     id: "1",
-    company: "Tech Solutions Inc.",
-    role: "Senior Software Engineer",
-    period: "2020 - Present",
-    description: "Leading the frontend team in developing a high-performance analytics dashboard. Implemented micro-frontends architecture."
+    company: "Homebase",
+    role: "Web Developer",
+    period: "2024",
+    description: "Worked on frontend development, creating responsive and interactive web interfaces for various projects."
   },
   {
     id: "2",
-    company: "Digital Innovations",
-    role: "Full Stack Developer",
-    period: "2017 - 2020",
-    description: "Developed and maintained multiple client projects using React and Node.js. Optimized database queries reducing latency by 40%."
-  }
+    company: "Movie in Campus Seminar",
+    role: "Winner",
+    period: "2025",
+    description: "Awarded for outstanding contribution and creativity in the Movie in Campus seminar organized by SUI Community Philippines."
+  },
+  {
+    id: "3",
+    company: "JRM Sison Website",
+    role: "Web Developer",
+    period: "2025",
+    description: "Developed and launched the official JRM Sison website, implementing user-friendly navigation and responsive design."
+  },
+   {
+    id: "5",
+    company: "Bahay Kubo AR Capstone",
+    role: "Mobile App Prototype",
+    period: "2025",
+    description: "Designed and prototyped the mobile app flow for the Bahay Kubo AR capstone project, focusing on intuitive UX and interactive user journeys."
+  },
+  
+  {
+    id: "5",
+    company: "Bahay Kubo AR Capstone",
+    role: "Capstone Project",
+    period: "2026",
+    description: "Successfully defended our capstone project titled 'Bahay Kubo AR', an interactive AR experience showcasing Filipino culture."
+  },
+  
 ];
+
+  
+
 
 export const certificationsData: Certification[] = [
   {
     id: "1",
-    title: "AWS Certified Solutions Architect",
-    issuer: "Amazon Web Services",
-    date: "2022"
+    title: "UI/UX Design for Beginners Certificate",
+    issuer: "Simplilearn",
+    date: "2025"
   },
   {
     id: "2",
@@ -87,34 +120,54 @@ export const certificationsData: Certification[] = [
 export const recommendationsData: Recommendation[] = [
   {
     id: "1",
-    name: "Sarah Williams",
-    role: "Product Manager at Tech Solutions",
-    content: "John is an exceptional engineer who consistently delivers high-quality code. His ability to solve complex problems is unmatched.",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100&h=100"
+    name: "JR Pacito",
+    role: "Jrm Sison Pastor",
+    content: "Working with Zoul has been a great experience. What I like about the website is it's being user friendly. Anyone can easily access and promote it to their friends and contacts. You can enjoy viewing it on either your smartphone or computer whichever is available. So wherever I go, I can easily present my personal testimony on what God is doing in our church family by getting them walk through the web for instance.",
+    avatar: "public/images/feed1.webp"
   },
-  {
-    id: "2",
-    name: "Michael Chen",
-    role: "CTO at Digital Innovations",
-    content: "One of the best developers I've worked with. John has a great eye for detail and always keeps the end-user in mind.",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100"
-  }
+  
+   
 ];
 
 export const galleryData: GalleryItem[] = [
   {
     id: "1",
-    url: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800&h=600",
-    caption: "Working on a new feature"
+    url: "public/images/g21.png",
+    caption: ""
   },
   {
     id: "2",
-    url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800&h=600",
-    caption: "Code review session"
+    url: "public/images/g2.jpg",
+    caption: ""
   },
   {
     id: "3",
-    url: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=800&h=600",
-    caption: "Late night debugging"
+    url: "public/images/g3.jpg",
+    caption: ""
+  },
+  {
+    id: "4",
+    url: "public/images/g4.jpg",
+    caption: ""
+  },
+  {
+    id: "5",
+    url: "public/images/g55.jpeg",
+    caption: ""
+  },
+  {
+    id: "6",
+    url: "public/images/g6.jpg",
+    caption: ""
+  },
+  {
+    id: "7",
+    url: "public/images/g7.jpeg",
+    caption: ""
+  },
+  {
+    id: "8",
+    url: "public/images/g1.jpeg",
+    caption: ""
   }
 ];

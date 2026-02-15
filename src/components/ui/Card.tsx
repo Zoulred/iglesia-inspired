@@ -8,14 +8,14 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
   return (
-    <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden ${className}`}>
+    <div className={`bg-stone-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-gray-950 overflow-hidden ${className}`}>
       {children}
     </div>
   );
 };
 
 export const CardHeader: React.FC<CardProps> = ({ children, className = "" }) => (
-  <div className={`px-6 py-4 border-b border-gray-50 ${className}`}>
+  <div className={`px-6 py-4 border-b border-gray-50 dark:border-gray-800 ${className}`}>
     {children}
   </div>
 );
