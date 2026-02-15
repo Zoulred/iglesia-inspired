@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Recommendation } from '../../types';
+import type { Recommendation } from '../../types';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 
 interface RecommendationsProps {

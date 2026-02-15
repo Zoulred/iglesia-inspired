@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TechStack as TechStackType } from '../../types';
+import type { TechStack as TechStackType } from '../../types';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 

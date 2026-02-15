@@ -24,3 +24,7 @@
 - **Colors**: Primary blue (#2563eb) for actions, Slate for text and secondary elements.
 - **Layout**: Two-column grid on desktop (1/3 sidebar, 2/3 content), single column on mobile.
 - **Typography**: Inter or system-sans, focus on readability and hierarchy.
+
+## TypeScript Configuration
+- **Verbatim Module Syntax**: The project uses `verbatimModuleSyntax: true` in `tsconfig.json`.
+- **Type Imports**: Always use `import type { ... }` when importing types to avoid compilation errors.

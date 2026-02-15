@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Experience as ExperienceType } from '../../types';
+import type { Experience as ExperienceType } from '../../types';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 
 interface ExperienceProps {

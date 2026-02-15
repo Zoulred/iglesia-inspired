@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { GalleryItem } from '../../types';
+import type { GalleryItem } from '../../types';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 
 interface GalleryProps {

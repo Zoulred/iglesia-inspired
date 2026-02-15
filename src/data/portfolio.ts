@@ -1,5 +1,5 @@
 
-import { Profile, Project, Experience, Certification, Recommendation, GalleryItem, TechStack } from '../types';
+import type { Profile, Project, Experience, Certification, Recommendation, GalleryItem, TechStack } from '../types';
 
 export const profileData: Profile = {
   name: "John Doe",

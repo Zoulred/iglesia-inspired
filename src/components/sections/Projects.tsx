@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Project } from '../../types';
+import type { Project } from '../../types';
 import { Card, CardContent } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 

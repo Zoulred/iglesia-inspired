@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Profile } from '../../types';
+import type { Profile } from '../../types';
 import { Card, CardContent } from '../ui/Card';
 
 interface ProfileHeaderProps {

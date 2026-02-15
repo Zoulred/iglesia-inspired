@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Certification } from '../../types';
+import type { Certification } from '../../types';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 
 interface CertificationsProps {
