@@ -5,6 +5,7 @@ export interface Profile {
   location: string;
   email: string;
   avatar: string;
+  avatarHover?: string;
   bio: string;
   socials: {
     platform: string;

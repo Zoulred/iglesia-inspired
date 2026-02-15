@@ -6,7 +6,8 @@ export const profileData: Profile = {
   role: "Senior Full Stack Engineer",
   location: "San Francisco, CA",
   email: "john.doe@example.com",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200&h=200",
+  avatar: "/myprofile.png",
+  avatarHover: "/myprofilehover.png",
   bio: "I build scalable web applications with a focus on user experience and clean code. With over 8 years of experience in the industry, I specialize in React, Node.js, and Cloud Architecture.",
   socials: [
     { platform: "GitHub", url: "https://github.com", icon: "github" },

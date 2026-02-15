@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { Profile } from '../../types';
 import { Card, CardContent } from '../ui/Card';
 
@@ -8,14 +8,22 @@ interface ProfileHeaderProps {
 }
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <Card className="mb-6">
       <CardContent className="flex flex-col md:flex-row items-center gap-6">
-        <img 
-          src={profile.avatar} 
-          alt={profile.name} 
-          className="w-32 h-32 rounded-2xl object-cover shadow-lg"
-        />
+        <div 
+          className="relative w-32 h-32 flex-shrink-0"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <img 
+            src={isHovered && profile.avatarHover ? profile.avatarHover : profile.avatar} 
+            alt={profile.name} 
+            className="w-full h-full rounded-2xl object-cover shadow-lg transition-all duration-300"
+          />
+        </div>
         <div className="text-center md:text-left flex-1">
           <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
           <p className="text-lg text-blue-600 font-medium mb-2">{profile.role}</p>

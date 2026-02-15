@@ -28,3 +28,7 @@
 ## TypeScript Configuration
 - **Verbatim Module Syntax**: The project uses `verbatimModuleSyntax: true` in `tsconfig.json`.
 - **Type Imports**: Always use `import type { ... }` when importing types to avoid compilation errors.
+
+## Implementation Details
+- **Assets**: Static assets like profile images should be placed in the `public/` directory and referenced with absolute paths (e.g., `/myprofile.png`).
+- **Interactive Components**: Use React state (`useState`) for simple UI interactions like image hover swaps to ensure smooth transitions and maintainability.
