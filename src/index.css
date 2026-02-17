@@ -1,6 +1,10 @@
 
+/* stylelint-disable at-rule-no-unknown */
+/* stylelint-disable-next-line */
 @tailwind base;
+/* stylelint-disable-next-line */
 @tailwind components;
+/* stylelint-disable-next-line */
 @tailwind utilities;
 
 :root {
@@ -10,19 +14,63 @@
   --foreground: #0f172a;
 }
 
+:root.dark {
+  --primary: #60a5fa;
+  --secondary: #94a3b8;
+  --background: #0f172a;
+  --foreground: #f8fafc;
+}
+
+:root.dark.cyberhacker {
+  --primary: #ff1744;
+  --secondary: #00bfff;
+  --background: #0a0e27;
+  --foreground: #00ff88;
+}
+
 @layer base {
   body {
+    /* stylelint-disable-next-line */
     @apply bg-slate-50 text-slate-900 antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  .dark body {
+    /* stylelint-disable-next-line */
+    @apply bg-slate-900 text-slate-100;
+  }
+
+  .dark.cyberhacker body {
+    /* stylelint-disable-next-line */
+    @apply bg-slate-900 text-lime-400;
+    background-color: var(--background);
+    color: var(--foreground);
   }
 }
 
 @layer components {
   .card-shadow {
+    /* stylelint-disable-next-line */
     @apply shadow-sm border border-slate-100;
   }
 
+  .dark .card-shadow {
+    /* stylelint-disable-next-line */
+    @apply border-slate-700;
+  }
+
+  .dark.cyberhacker .card-shadow {
+    /* stylelint-disable-next-line */
+    @apply border-cyan-500 shadow-[0_0_10px_rgba(0,191,255,0.3)];
+  }
+
   .card-shadow-hover {
+    /* stylelint-disable-next-line */
     @apply transition-all duration-200 hover:shadow-md hover:border-slate-200;
+  }
+
+  .dark.cyberhacker .card-shadow-hover {
+    /* stylelint-disable-next-line */
+    @apply hover:shadow-[0_0_15px_rgba(255,23,68,0.5)] hover:border-red-500;
   }
 }

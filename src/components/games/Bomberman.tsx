@@ -1,263 +1,272 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const GRID_SIZE = 10;
-const TILE_SIZE = 40;
-const GAME_WIDTH = GRID_SIZE * TILE_SIZE;
-const GAME_HEIGHT = GRID_SIZE * TILE_SIZE;
+// Game Constants
+const GRID_W = 15;
+const GRID_H = 13;
 
-interface Position {
-  x: number;
-  y: number;
-}
+type Position = { x: number; y: number };
+type Entity = Position & { id: number };
+type Bomb = Entity & { timer: number; range: number };
+type Explosion = Entity & { timer: number };
+type Enemy = Entity & { dir: Position };
 
-interface Bomb {
-  x: number;
-  y: number;
-  timer: number;
-}
+// --- Assets (SVGs) ---
 
-interface Explosion {
-  x: number;
-  y: number;
-  timer: number;
-}
+const PlayerAvatar = ({ dir, moving }: { dir: Position, moving: boolean }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <g className={`transition-transform duration-150 ${moving ? 'scale-105' : 'scale-100'}`}>
+      {/* Body */}
+      <circle cx="50" cy="55" r="35" className="fill-blue-600 dark:fill-blue-500 [.cyber_&]:fill-cyan-500" />
+      <circle cx="50" cy="45" r="35" className="fill-blue-400 dark:fill-blue-400 [.cyber_&]:fill-cyan-400" />
+      
+      {/* Face/Visor Area */}
+      <path d="M 25 40 Q 50 20 75 40 Q 75 65 50 65 Q 25 65 25 40" className="fill-black/20" />
+      
+      {/* Eyes - Directional */}
+      <g transform={`translate(${dir.x * 6}, ${dir.y * 2})`}>
+        <ellipse cx="38" cy="42" rx="6" ry="9" className="fill-white" />
+        <ellipse cx="62" cy="42" rx="6" ry="9" className="fill-white" />
+        <circle cx="38" cy="42" r="3" className="fill-black" />
+        <circle cx="62" cy="42" r="3" className="fill-black" />
+      </g>
+
+      {/* Helmet Details */}
+      <path d="M 50 15 L 50 5" stroke="white" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="50" cy="5" r="4" className="fill-red-500 [.cyber_&]:fill-fuchsia-500" />
+    </g>
+  </svg>
+);
+
+const EnemySVG = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-sm animate-bounce">
+    <circle cx="50" cy="55" r="30" className="fill-red-700/50 [.cyber_&]:fill-fuchsia-700/50" />
+    <circle cx="50" cy="50" r="35" className="fill-red-500 [.cyber_&]:fill-fuchsia-500" />
+    {/* Angry Eyes */}
+    <path d="M 30 45 L 45 55" stroke="white" strokeWidth="4" strokeLinecap="round" />
+    <path d="M 70 45 L 55 55" stroke="white" strokeWidth="4" strokeLinecap="round" />
+    <circle cx="40" cy="55" r="3" className="fill-white" />
+    <circle cx="60" cy="55" r="3" className="fill-white" />
+    {/* Mouth */}
+    <path d="M 40 70 Q 50 60 60 70" stroke="white" strokeWidth="3" fill="none" />
+  </svg>
+);
+
+const BombSVG = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full animate-pulse">
+    <circle cx="50" cy="55" r="35" className="fill-gray-900" />
+    <circle cx="40" cy="45" r="10" className="fill-gray-700" />
+    {/* Fuse */}
+    <path d="M 50 20 L 50 10" stroke="orange" strokeWidth="4" className="animate-ping" />
+    <path d="M 50 20 Q 60 10 70 20" stroke="white" strokeWidth="3" fill="none" />
+  </svg>
+);
+
+const WallBlock = () => (
+  <div className="w-full h-full bg-gray-700 [.cyber_&]:bg-cyan-900/50 rounded-sm border-t-4 border-l-4 border-gray-600 [.cyber_&]:border-cyan-700 border-b-4 border-r-4 border-gray-800 [.cyber_&]:border-cyan-900 shadow-inner" />
+);
+
+const SoftBlock = () => (
+  <div className="w-full h-full bg-amber-700 [.cyber_&]:bg-fuchsia-900/50 rounded-sm border-4 border-amber-800 [.cyber_&]:border-fuchsia-800 relative shadow-sm">
+    <div className="absolute inset-1 border-2 border-amber-900/20 [.cyber_&]:border-fuchsia-900/20" />
+    <div className="absolute top-1 left-1 w-1 h-1 bg-amber-500/50 [.cyber_&]:bg-fuchsia-500/50 rounded-full" />
+  </div>
+);
+
+// --- Main Component ---
 
 export const Bomberman: React.FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [playerPos, setPlayerPos] = useState<Position>({ x: 1, y: 1 });
+  // Game State
+  const [grid, setGrid] = useState<number[][]>([]);
+  const [player, setPlayer] = useState<Position & { dir: Position, moving: boolean }>({ x: 1, y: 1, dir: { x: 0, y: 1 }, moving: false });
   const [bombs, setBombs] = useState<Bomb[]>([]);
   const [explosions, setExplosions] = useState<Explosion[]>([]);
-  const [walls, setWalls] = useState<Set<string>>(new Set());
+  const [enemies, setEnemies] = useState<Enemy[]>([]);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
-  const keysPressed = useRef<{ [key: string]: boolean }>({});
-
-  // Initialize walls
+  const [win, setWin] = useState(false);
+  
+  // Refs for game loop
+  const stateRef = useRef({ grid, player, bombs, explosions, enemies, gameOver, win });
   useEffect(() => {
-    const newWalls = new Set<string>();
-    for (let x = 1; x < GRID_SIZE - 1; x++) {
-      for (let y = 1; y < GRID_SIZE - 1; y++) {
-        // Create some random destructible walls
-        if ((x % 2 === 1 || y % 2 === 1) && Math.random() > 0.3) {
-          newWalls.add(`${x},${y}`);
-        }
-      }
-    }
-    setWalls(newWalls);
+    stateRef.current = { grid, player, bombs, explosions, enemies, gameOver, win };
+  }, [grid, player, bombs, explosions, enemies, gameOver, win]);
+
+  // Initialize Game
+  useEffect(() => {
+    resetGame();
   }, []);
 
-  // Handle keyboard input
+  const resetGame = () => {
+    // 0: Empty, 1: Wall, 2: Soft Block
+    const newGrid = Array(GRID_H).fill(0).map((_, y) => 
+      Array(GRID_W).fill(0).map((_, x) => {
+        if (x === 0 || x === GRID_W - 1 || y === 0 || y === GRID_H - 1 || (x % 2 === 0 && y % 2 === 0)) return 1;
+        if ((x > 2 || y > 2) && Math.random() < 0.3) return 2;
+        return 0;
+      })
+    );
+    
+    setGrid(newGrid);
+    setPlayer({ x: 1, y: 1, dir: { x: 0, y: 1 }, moving: false });
+    setBombs([]);
+    setExplosions([]);
+    setEnemies([
+      { id: 1, x: GRID_W - 2, y: GRID_H - 2, dir: { x: 0, y: -1 } },
+      { id: 2, x: GRID_W - 2, y: 1, dir: { x: -1, y: 0 } },
+      { id: 3, x: 1, y: GRID_H - 2, dir: { x: 1, y: 0 } }
+    ]);
+    setScore(0);
+    setGameOver(false);
+    setWin(false);
+  };
+
+  // Game Loop
+  useEffect(() => {
+    const loop = setInterval(() => {
+      if (stateRef.current.gameOver || stateRef.current.win) return;
+      updateGame();
+    }, 200);
+    return () => clearInterval(loop);
+  }, []);
+
+  const updateGame = () => {
+    const { grid, player, bombs, explosions, enemies } = stateRef.current;
+    
+    // Update Bombs & Explosions
+    const newBombs = bombs.map(b => ({ ...b, timer: b.timer - 1 })).filter(b => b.timer > 0);
+    const explodingBombs = bombs.filter(b => b.timer === 1);
+    let newExplosions = [...explosions.map(e => ({ ...e, timer: e.timer - 1 })).filter(e => e.timer > 0)];
+    
+    explodingBombs.forEach(bomb => {
+      newExplosions.push({ x: bomb.x, y: bomb.y, id: Date.now() + Math.random(), timer: 3 });
+      [{x:0, y:1}, {x:0, y:-1}, {x:1, y:0}, {x:-1, y:0}].forEach(dir => {
+        for(let i = 1; i <= bomb.range; i++) {
+          const tx = bomb.x + dir.x * i;
+          const ty = bomb.y + dir.y * i;
+          if (grid[ty][tx] === 1) break;
+          newExplosions.push({ x: tx, y: ty, id: Date.now() + Math.random(), timer: 3 });
+          if (grid[ty][tx] === 2) break;
+        }
+      });
+    });
+
+    // Update Grid
+    const newGrid = [...grid.map(row => [...row])];
+    newExplosions.forEach(exp => {
+      if (newGrid[exp.y][exp.x] === 2) {
+        newGrid[exp.y][exp.x] = 0;
+        setScore(s => s + 10);
+      }
+    });
+
+    // Move Enemies
+    const newEnemies = enemies.map(enemy => {
+      let nextX = enemy.x + enemy.dir.x;
+      let nextY = enemy.y + enemy.dir.y;
+      if (newGrid[nextY][nextX] !== 0 || bombs.some(b => b.x === nextX && b.y === nextY)) {
+        const dirs = [{x:0, y:1}, {x:0, y:-1}, {x:1, y:0}, {x:-1, y:0}];
+        const validDirs = dirs.filter(d => newGrid[enemy.y + d.y][enemy.x + d.x] === 0);
+        if (validDirs.length > 0) return { ...enemy, dir: validDirs[Math.floor(Math.random() * validDirs.length)] };
+        return enemy;
+      }
+      return { ...enemy, x: nextX, y: nextY };
+    }).filter(e => !newExplosions.some(exp => exp.x === e.x && exp.y === e.y));
+
+    if (newEnemies.length < enemies.length) setScore(s => s + 100);
+    if (newEnemies.length === 0 && enemies.length > 0) setWin(true);
+
+    if (newExplosions.some(exp => exp.x === player.x && exp.y === player.y) || 
+        newEnemies.some(e => e.x === player.x && e.y === player.y)) {
+      setGameOver(true);
+    }
+
+    setGrid(newGrid);
+    setBombs(newBombs);
+    setExplosions(newExplosions);
+    setEnemies(newEnemies);
+  };
+
+  const movePlayer = (dx: number, dy: number) => {
+    if (gameOver || win) return;
+    const { grid, player, bombs } = stateRef.current;
+    const nextX = player.x + dx;
+    const nextY = player.y + dy;
+
+    if (grid[nextY][nextX] === 0 && !bombs.some(b => b.x === nextX && b.y === nextY)) {
+      setPlayer({ x: nextX, y: nextY, dir: { x: dx, y: dy }, moving: true });
+      setTimeout(() => setPlayer(p => ({ ...p, moving: false })), 150);
+    } else {
+       setPlayer(p => ({ ...p, dir: { x: dx, y: dy } }));
+    }
+  };
+
+  const placeBomb = () => {
+    if (gameOver || win) return;
+    const { player, bombs } = stateRef.current;
+    if (bombs.some(b => b.x === player.x && b.y === player.y)) return;
+    setBombs([...bombs, { x: player.x, y: player.y, id: Date.now(), timer: 15, range: 2 }]);
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      keysPressed.current[e.key] = true;
-
-      if (e.key === ' ') {
-        e.preventDefault();
-        // Place bomb
-        const bombExists = bombs.some((b) => b.x === playerPos.x && b.y === playerPos.y);
-        if (!bombExists && bombs.length < 3) {
-          setBombs([...bombs, { x: playerPos.x, y: playerPos.y, timer: 120 }]);
-        }
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
+      switch(e.key) {
+        case 'ArrowUp': movePlayer(0, -1); break;
+        case 'ArrowDown': movePlayer(0, 1); break;
+        case 'ArrowLeft': movePlayer(-1, 0); break;
+        case 'ArrowRight': movePlayer(1, 0); break;
+        case ' ': placeBomb(); break;
       }
     };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      keysPressed.current[e.key] = false;
-    };
-
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [playerPos, bombs]);
-
-  // Game loop
-  useEffect(() => {
-    const gameLoop = setInterval(() => {
-      if (gameOver) return;
-
-      setPlayerPos((prev) => {
-        let newX = prev.x;
-        let newY = prev.y;
-
-        if (keysPressed.current['ArrowUp'] || keysPressed.current['w']) newY = Math.max(0, prev.y - 1);
-        if (keysPressed.current['ArrowDown'] || keysPressed.current['s']) newY = Math.min(GRID_SIZE - 1, prev.y + 1);
-        if (keysPressed.current['ArrowLeft'] || keysPressed.current['a']) newX = Math.max(0, prev.x - 1);
-        if (keysPressed.current['ArrowRight'] || keysPressed.current['d']) newX = Math.min(GRID_SIZE - 1, prev.x + 1);
-
-        // Check collision with walls
-        const wallKey = `${newX},${newY}`;
-        if (walls.has(wallKey)) {
-          newX = prev.x;
-          newY = prev.y;
-        }
-
-        // Check collision with bombs
-        const bombCollision = bombs.some((b) => b.x === newX && b.y === newY);
-        if (bombCollision) {
-          newX = prev.x;
-          newY = prev.y;
-        }
-
-        // Check explosion collision (game over)
-        const explosionCollision = explosions.some((exp) => exp.x === newX && exp.y === newY);
-        if (explosionCollision) {
-          setGameOver(true);
-        }
-
-        return { x: newX, y: newY };
-      });
-
-      // Update bombs
-      setBombs((prevBombs) => {
-        const updated = prevBombs.map((b) => ({ ...b, timer: b.timer - 1 }));
-        const newExplosions: Explosion[] = [];
-
-        updated.forEach((bomb) => {
-          if (bomb.timer <= 0) {
-            // Explode
-            newExplosions.push({ x: bomb.x, y: bomb.y, timer: 30 });
-
-            // Create cross pattern explosions
-            for (let dir of [[0, 1], [0, -1], [1, 0], [-1, 0]]) {
-              for (let i = 1; i < 3; i++) {
-                const expX = bomb.x + dir[0] * i;
-                const expY = bomb.y + dir[1] * i;
-                if (expX >= 0 && expX < GRID_SIZE && expY >= 0 && expY < GRID_SIZE) {
-                  if (!walls.has(`${expX},${expY}`)) {
-                    newExplosions.push({ x: expX, y: expY, timer: 30 });
-                  } else {
-                    // Destroy wall
-                    setWalls((prev) => {
-                      const newSet = new Set(prev);
-                      newSet.delete(`${expX},${expY}`);
-                      return newSet;
-                    });
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        });
-
-        if (newExplosions.length > 0) {
-          setExplosions((prev) => [...prev, ...newExplosions]);
-          setScore((prev) => prev + newExplosions.length * 10);
-        }
-
-        return updated.filter((b) => b.timer > 0);
-      });
-
-      // Update explosions
-      setExplosions((prev) => prev.map((e) => ({ ...e, timer: e.timer - 1 })).filter((e) => e.timer > 0));
-    }, 50);
-
-    return () => clearInterval(gameLoop);
-  }, [gameOver, walls, bombs, explosions, playerPos]);
-
-  // Render canvas
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Clear canvas
-    ctx.fillStyle = '#e7e5e4'; // Stone-50 for light, will be overridden for dark
-    if (document.documentElement.classList.contains('dark')) {
-      ctx.fillStyle = '#1f2937'; // Gray-800
-    }
-    ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-    // Draw grid
-    ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#374151' : '#d6d3d1';
-    ctx.lineWidth = 1;
-    for (let x = 0; x <= GRID_SIZE; x++) {
-      ctx.beginPath();
-      ctx.moveTo(x * TILE_SIZE, 0);
-      ctx.lineTo(x * TILE_SIZE, GAME_HEIGHT);
-      ctx.stroke();
-    }
-    for (let y = 0; y <= GRID_SIZE; y++) {
-      ctx.beginPath();
-      ctx.moveTo(0, y * TILE_SIZE);
-      ctx.lineTo(GAME_WIDTH, y * TILE_SIZE);
-      ctx.stroke();
-    }
-
-    // Draw walls
-    ctx.fillStyle = document.documentElement.classList.contains('dark') ? '#4b5563' : '#9ca3af';
-    walls.forEach((wallKey) => {
-      const [x, y] = wallKey.split(',').map(Number);
-      ctx.fillRect(x * TILE_SIZE + 2, y * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
-    });
-
-    // Draw bombs
-    ctx.fillStyle = '#1f2937';
-    bombs.forEach((bomb) => {
-      ctx.beginPath();
-      ctx.arc(
-        bomb.x * TILE_SIZE + TILE_SIZE / 2,
-        bomb.y * TILE_SIZE + TILE_SIZE / 2,
-        TILE_SIZE / 3,
-        0,
-        Math.PI * 2
-      );
-      ctx.fill();
-    });
-
-    // Draw explosions
-    ctx.fillStyle = '#ef4444';
-    explosions.forEach((exp) => {
-      ctx.fillRect(exp.x * TILE_SIZE + 5, exp.y * TILE_SIZE + 5, TILE_SIZE - 10, TILE_SIZE - 10);
-    });
-
-    // Draw player
-    ctx.fillStyle = '#2563eb';
-    ctx.fillRect(playerPos.x * TILE_SIZE + 5, playerPos.y * TILE_SIZE + 5, TILE_SIZE - 10, TILE_SIZE - 10);
-
-    // Draw game over
-    if (gameOver) {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-      ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 24px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('GAME OVER', GAME_WIDTH / 2, GAME_HEIGHT / 2);
-    }
-  }, [playerPos, bombs, explosions, walls, gameOver]);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="flex justify-between w-full items-center">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Bomberman</h3>
-        <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">Score: {score}</div>
-        <button
-          onClick={() => {
-            setPlayerPos({ x: 1, y: 1 });
-            setBombs([]);
-            setExplosions([]);
-            setScore(0);
-            setGameOver(false);
-          }}
-          className="px-3 py-1 bg-blue-600 dark:bg-blue-700 text-white rounded text-xs font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
-        >
-          Restart
-        </button>
+    <div className="flex flex-col items-center w-full select-none">
+      <div className="flex justify-between w-full mb-4 px-4">
+        <div className="text-lg font-bold text-gray-700 dark:text-gray-200 [.cyber_&]:text-cyan-100">Score: {score}</div>
+        <div className="text-lg font-bold">{gameOver ? <span className="text-red-500 [.cyber_&]:text-red-400">GAME OVER</span> : win ? <span className="text-green-500 [.cyber_&]:text-green-400">VICTORY!</span> : <span className="text-blue-500 [.cyber_&]:text-cyan-400">PLAYING</span>}</div>
+        <button onClick={resetGame} className="px-3 py-1 bg-blue-500 [.cyber_&]:bg-cyan-600 text-white rounded hover:bg-blue-600 [.cyber_&]:hover:bg-cyan-500 text-sm shadow-sm">Reset</button>
       </div>
-      <canvas
-        ref={canvasRef}
-        width={GAME_WIDTH}
-        height={GAME_HEIGHT}
-        className="border-2 border-gray-300 dark:border-gray-700 rounded-lg shadow-md dark:shadow-gray-900"
-      />
-      <div className="text-xs text-gray-600 dark:text-gray-400 text-center">
-        <p>Arrow Keys or WASD to move | Space to place bomb</p>
+
+      <div className="relative bg-stone-200 dark:bg-stone-800 [.cyber_&]:bg-gray-900 rounded-lg overflow-hidden shadow-2xl border-4 border-stone-300 dark:border-stone-700 [.cyber_&]:border-cyan-500/50 [.cyber_&]:shadow-[0_0_30px_rgba(6,182,212,0.2)]"
+           style={{ display: 'grid', gridTemplateColumns: `repeat(${GRID_W}, 1fr)`, width: '100%', maxWidth: '600px', aspectRatio: `${GRID_W}/${GRID_H}` }}>
+        {grid.map((row, y) => row.map((cell, x) => (
+          <div key={`${x}-${y}`} className="relative w-full h-full border-[0.5px] border-black/5 dark:border-white/5">
+            {cell === 1 && <WallBlock />}
+            {cell === 2 && <SoftBlock />}
+          </div>
+        )))}
+        {bombs.map(b => <div key={b.id} className="absolute transition-all duration-200" style={{ left: `${(b.x/GRID_W)*100}%`, top: `${(b.y/GRID_H)*100}%`, width: `${100/GRID_W}%`, height: `${100/GRID_H}%` }}><div className="p-1 w-full h-full"><BombSVG /></div></div>)}
+        {explosions.map(e => <div key={e.id} className="absolute bg-orange-500/80 animate-pulse" style={{ left: `${(e.x/GRID_W)*100}%`, top: `${(e.y/GRID_H)*100}%`, width: `${100/GRID_W}%`, height: `${100/GRID_H}%` }} />)}
+        {enemies.map(e => <div key={e.id} className="absolute transition-all duration-200 ease-linear" style={{ left: `${(e.x/GRID_W)*100}%`, top: `${(e.y/GRID_H)*100}%`, width: `${100/GRID_W}%`, height: `${100/GRID_H}%` }}><div className="p-1 w-full h-full"><EnemySVG /></div></div>)}
+        {!gameOver && <div className="absolute transition-all duration-150 ease-out z-10" style={{ left: `${(player.x/GRID_W)*100}%`, top: `${(player.y/GRID_H)*100}%`, width: `${100/GRID_W}%`, height: `${100/GRID_H}%` }}><div className="p-0.5 w-full h-full"><PlayerAvatar dir={player.dir} moving={player.moving} /></div></div>}
       </div>
+
+      <div className="mt-6 w-full max-w-[280px] grid grid-cols-3 gap-3 md:hidden">
+        <div />
+        <ControlButton onClick={() => movePlayer(0, -1)} icon="↑" />
+        <div />
+        <ControlButton onClick={() => movePlayer(-1, 0)} icon="←" />
+        <ControlButton onClick={placeBomb} icon="💣" color="red" />
+        <ControlButton onClick={() => movePlayer(1, 0)} icon="→" />
+        <div />
+        <ControlButton onClick={() => movePlayer(0, 1)} icon="↓" />
+        <div />
+      </div>
+      
+      <div className="hidden md:block mt-4 text-sm text-gray-500 dark:text-gray-400 [.cyber_&]:text-gray-400">Use Arrow Keys to move, Space to place bomb</div>
     </div>
   );
 };
+
+const ControlButton = ({ onClick, icon, color = 'blue' }: { onClick: () => void, icon: string, color?: 'blue' | 'red' }) => (
+  <button 
+    className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg active:scale-95 transition-all ${color === 'blue' ? 'bg-white dark:bg-gray-700 [.cyber_&]:bg-gray-800 text-blue-600 dark:text-blue-400 [.cyber_&]:text-cyan-400 [.cyber_&]:border [.cyber_&]:border-cyan-500/30' : 'bg-red-50 dark:bg-red-900/30 [.cyber_&]:bg-red-900/20 text-red-600 dark:text-red-400 [.cyber_&]:text-red-400 border-2 border-red-100 dark:border-red-800 [.cyber_&]:border-red-500/30'}`}
+    onClick={(e) => { e.preventDefault(); onClick(); }}
+    onTouchStart={(e) => { e.preventDefault(); onClick(); }}
+  >
+    {icon}
+  </button>
+);

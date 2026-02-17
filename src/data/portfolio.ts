@@ -63,28 +63,28 @@ export const experienceData: Experience[] = [
   {
     id: "1",
     company: "Homebase",
-    role: "Web Developer",
+    role: "WEB DEVELOPER ",
     period: "2024",
     description: "Worked on frontend development, creating responsive and interactive web interfaces for various projects."
   },
   {
     id: "2",
-    company: "Movie in Campus Seminar",
-    role: "Seminar Winner",
+    company: " Sui Movie in Campus Seminar",
+    role: "SEMINAR WINNER",
     period: "2025",
     description: "Awarded as a Seminar Winner in Game Development for creating the “Asawang Category” game using Gemini AI, recognized for creativity, innovation, and strong technical execution."
   },
   {
     id: "3",
     company: "JRM Sison Website",
-    role: "Web Developer",
+    role: "WEB DEVELOPER",
     period: "2025",
     description: "Developed and launched the official JRM Sison website, implementing user-friendly navigation and responsive design."
   },
    {
     id: "4",
     company: "Bahay Kubo AR Capstone",
-    role: "Mobile App Prototype",
+    role: "MOBILE APP PROTOTYPING",
     period: "2025",
     description: "Designed and prototyped the mobile app flow for the Bahay Kubo AR capstone project, focusing on intuitive UX and interactive user journeys."
   },
@@ -92,9 +92,16 @@ export const experienceData: Experience[] = [
   {
     id: "5",
     company: "Bahay Kubo AR Capstone",
-    role: "Capstone Project",
+    role: "CAPSTONE PROJECT DEFENSE",
     period: "2026",
     description: "Successfully defended our capstone project titled 'Bahay Kubo AR', an interactive AR experience showcasing Filipino culture."
+  },
+  {
+    id: "6",
+    company: "Makerspace InnovHub",
+    role: "FRONTEND DEVELOPER & MOBILE DESIGNER (OJT)",
+    period: "Present",
+    description: "Currently undergoing On-the-Job Training, contributing to frontend development and mobile design projects."
   },
   
 ];
@@ -114,7 +121,20 @@ export const certificationsData: Certification[] = [
     title: "Introduction to Cybersecurity",
     issuer: "Cisco Networking Academy",
     date: "2025"
+  },
+  {
+    id: "3",
+    title: "UI/UX Design for Beginners Certificate",
+    issuer: "Simplilearn",
+    date: "2025"
+  },
+  {
+    id: "4",
+    title: "Careers in Cybersecurity",
+    issuer: "Cybrary",
+    date: "2025"
   }
+  
 ];
 
 export const recommendationsData: Recommendation[] = [
