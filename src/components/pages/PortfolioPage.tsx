@@ -17,7 +17,11 @@ import {
   galleryData 
 } from '../../data/portfolio';
 
-export const PortfolioPage: React.FC = () => {
+interface PortfolioPageProps {
+  onNavigate?: (page: 'projects') => void;
+}
+
+export const PortfolioPage: React.FC<PortfolioPageProps> = ({ onNavigate }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       {/* Left Column - Profile & Info */}
@@ -31,7 +35,7 @@ export const PortfolioPage: React.FC = () => {
       {/* Right Column - Main Content */}
       <div className="lg:col-span-8 space-y-6">
         <Experience experiences={experienceData} />
-        <Projects projects={projectsData} />
+        <Projects projects={projectsData} onViewAll={() => onNavigate?.('projects')} />
         <Recommendations recommendations={recommendationsData} />
         <Gallery items={galleryData} />
       </div>

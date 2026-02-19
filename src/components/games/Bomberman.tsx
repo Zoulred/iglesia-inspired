@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Game Constants
 const GRID_W = 15;
 const GRID_H = 13;
 
@@ -10,19 +9,15 @@ type Bomb = Entity & { timer: number; range: number };
 type Explosion = Entity & { timer: number };
 type Enemy = Entity & { dir: Position };
 
-// --- Assets (SVGs) ---
 
 const PlayerAvatar = ({ dir, moving }: { dir: Position, moving: boolean }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <g className={`transition-transform duration-150 ${moving ? 'scale-105' : 'scale-100'}`}>
-      {/* Body */}
       <circle cx="50" cy="55" r="35" className="fill-blue-600 dark:fill-blue-500 [.cyber_&]:fill-cyan-500" />
       <circle cx="50" cy="45" r="35" className="fill-blue-400 dark:fill-blue-400 [.cyber_&]:fill-cyan-400" />
       
-      {/* Face/Visor Area */}
       <path d="M 25 40 Q 50 20 75 40 Q 75 65 50 65 Q 25 65 25 40" className="fill-black/20" />
       
-      {/* Eyes - Directional */}
       <g transform={`translate(${dir.x * 6}, ${dir.y * 2})`}>
         <ellipse cx="38" cy="42" rx="6" ry="9" className="fill-white" />
         <ellipse cx="62" cy="42" rx="6" ry="9" className="fill-white" />
@@ -30,7 +25,6 @@ const PlayerAvatar = ({ dir, moving }: { dir: Position, moving: boolean }) => (
         <circle cx="62" cy="42" r="3" className="fill-black" />
       </g>
 
-      {/* Helmet Details */}
       <path d="M 50 15 L 50 5" stroke="white" strokeWidth="4" strokeLinecap="round" />
       <circle cx="50" cy="5" r="4" className="fill-red-500 [.cyber_&]:fill-fuchsia-500" />
     </g>
@@ -41,12 +35,10 @@ const EnemySVG = () => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-sm animate-bounce">
     <circle cx="50" cy="55" r="30" className="fill-red-700/50 [.cyber_&]:fill-fuchsia-700/50" />
     <circle cx="50" cy="50" r="35" className="fill-red-500 [.cyber_&]:fill-fuchsia-500" />
-    {/* Angry Eyes */}
     <path d="M 30 45 L 45 55" stroke="white" strokeWidth="4" strokeLinecap="round" />
     <path d="M 70 45 L 55 55" stroke="white" strokeWidth="4" strokeLinecap="round" />
     <circle cx="40" cy="55" r="3" className="fill-white" />
     <circle cx="60" cy="55" r="3" className="fill-white" />
-    {/* Mouth */}
     <path d="M 40 70 Q 50 60 60 70" stroke="white" strokeWidth="3" fill="none" />
   </svg>
 );
@@ -55,7 +47,6 @@ const BombSVG = () => (
   <svg viewBox="0 0 100 100" className="w-full h-full animate-pulse">
     <circle cx="50" cy="55" r="35" className="fill-gray-900" />
     <circle cx="40" cy="45" r="10" className="fill-gray-700" />
-    {/* Fuse */}
     <path d="M 50 20 L 50 10" stroke="orange" strokeWidth="4" className="animate-ping" />
     <path d="M 50 20 Q 60 10 70 20" stroke="white" strokeWidth="3" fill="none" />
   </svg>
@@ -72,10 +63,8 @@ const SoftBlock = () => (
   </div>
 );
 
-// --- Main Component ---
 
 export const Bomberman: React.FC = () => {
-  // Game State
   const [grid, setGrid] = useState<number[][]>([]);
   const [player, setPlayer] = useState<Position & { dir: Position, moving: boolean }>({ x: 1, y: 1, dir: { x: 0, y: 1 }, moving: false });
   const [bombs, setBombs] = useState<Bomb[]>([]);
@@ -85,19 +74,23 @@ export const Bomberman: React.FC = () => {
   const [gameOver, setGameOver] = useState(false);
   const [win, setWin] = useState(false);
   
-  // Refs for game loop
   const stateRef = useRef({ grid, player, bombs, explosions, enemies, gameOver, win });
+  const moveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   useEffect(() => {
     stateRef.current = { grid, player, bombs, explosions, enemies, gameOver, win };
   }, [grid, player, bombs, explosions, enemies, gameOver, win]);
 
-  // Initialize Game
   useEffect(() => {
     resetGame();
+    return () => {
+      if (moveIntervalRef.current) {
+        clearInterval(moveIntervalRef.current);
+      }
+    };
   }, []);
 
   const resetGame = () => {
-    // 0: Empty, 1: Wall, 2: Soft Block
     const newGrid = Array(GRID_H).fill(0).map((_, y) => 
       Array(GRID_W).fill(0).map((_, x) => {
         if (x === 0 || x === GRID_W - 1 || y === 0 || y === GRID_H - 1 || (x % 2 === 0 && y % 2 === 0)) return 1;
@@ -120,10 +113,15 @@ export const Bomberman: React.FC = () => {
     setWin(false);
   };
 
-  // Game Loop
   useEffect(() => {
     const loop = setInterval(() => {
-      if (stateRef.current.gameOver || stateRef.current.win) return;
+      if (stateRef.current.gameOver || stateRef.current.win) {
+        if (moveIntervalRef.current) {
+          clearInterval(moveIntervalRef.current);
+          moveIntervalRef.current = null;
+        }
+        return;
+      }
       updateGame();
     }, 200);
     return () => clearInterval(loop);
@@ -132,7 +130,6 @@ export const Bomberman: React.FC = () => {
   const updateGame = () => {
     const { grid, player, bombs, explosions, enemies } = stateRef.current;
     
-    // Update Bombs & Explosions
     const newBombs = bombs.map(b => ({ ...b, timer: b.timer - 1 })).filter(b => b.timer > 0);
     const explodingBombs = bombs.filter(b => b.timer === 1);
     let newExplosions = [...explosions.map(e => ({ ...e, timer: e.timer - 1 })).filter(e => e.timer > 0)];
@@ -150,7 +147,6 @@ export const Bomberman: React.FC = () => {
       });
     });
 
-    // Update Grid
     const newGrid = [...grid.map(row => [...row])];
     newExplosions.forEach(exp => {
       if (newGrid[exp.y][exp.x] === 2) {
@@ -159,7 +155,6 @@ export const Bomberman: React.FC = () => {
       }
     });
 
-    // Move Enemies
     const newEnemies = enemies.map(enemy => {
       let nextX = enemy.x + enemy.dir.x;
       let nextY = enemy.y + enemy.dir.y;
@@ -187,7 +182,7 @@ export const Bomberman: React.FC = () => {
   };
 
   const movePlayer = (dx: number, dy: number) => {
-    if (gameOver || win) return;
+    if (stateRef.current.gameOver || stateRef.current.win) return;
     const { grid, player, bombs } = stateRef.current;
     const nextX = player.x + dx;
     const nextY = player.y + dy;
@@ -200,8 +195,24 @@ export const Bomberman: React.FC = () => {
     }
   };
 
+  const startMoving = (dx: number, dy: number) => {
+    if (stateRef.current.gameOver || stateRef.current.win) return;
+    stopMoving();
+    movePlayer(dx, dy);
+    moveIntervalRef.current = setInterval(() => {
+      movePlayer(dx, dy);
+    }, 200);
+  };
+
+  const stopMoving = () => {
+    if (moveIntervalRef.current) {
+      clearInterval(moveIntervalRef.current);
+      moveIntervalRef.current = null;
+    }
+  };
+
   const placeBomb = () => {
-    if (gameOver || win) return;
+    if (stateRef.current.gameOver || stateRef.current.win) return;
     const { player, bombs } = stateRef.current;
     if (bombs.some(b => b.x === player.x && b.y === player.y)) return;
     setBombs([...bombs, { x: player.x, y: player.y, id: Date.now(), timer: 15, range: 2 }]);
@@ -244,16 +255,19 @@ export const Bomberman: React.FC = () => {
         {!gameOver && <div className="absolute transition-all duration-150 ease-out z-10" style={{ left: `${(player.x/GRID_W)*100}%`, top: `${(player.y/GRID_H)*100}%`, width: `${100/GRID_W}%`, height: `${100/GRID_H}%` }}><div className="p-0.5 w-full h-full"><PlayerAvatar dir={player.dir} moving={player.moving} /></div></div>}
       </div>
 
-      <div className="mt-6 w-full max-w-[280px] grid grid-cols-3 gap-3 md:hidden">
-        <div />
-        <ControlButton onClick={() => movePlayer(0, -1)} icon="↑" />
-        <div />
-        <ControlButton onClick={() => movePlayer(-1, 0)} icon="←" />
-        <ControlButton onClick={placeBomb} icon="💣" color="red" />
-        <ControlButton onClick={() => movePlayer(1, 0)} icon="→" />
-        <div />
-        <ControlButton onClick={() => movePlayer(0, 1)} icon="↓" />
-        <div />
+      <div className="mt-4 w-full max-w-sm flex justify-between items-center px-4 md:hidden">
+        <div className="grid grid-cols-3 gap-2 w-48">
+          <div />
+          <ControlButton onMoveStart={() => startMoving(0, -1)} onMoveEnd={stopMoving} icon="↑" />
+          <div />
+          <ControlButton onMoveStart={() => startMoving(-1, 0)} onMoveEnd={stopMoving} icon="←" />
+          <div />
+          <ControlButton onMoveStart={() => startMoving(1, 0)} onMoveEnd={stopMoving} icon="→" />
+          <div />
+          <ControlButton onMoveStart={() => startMoving(0, 1)} onMoveEnd={stopMoving} icon="↓" />
+          <div />
+        </div>
+        <ControlButton onAction={placeBomb} icon="💣" color="red" isAction />
       </div>
       
       <div className="hidden md:block mt-4 text-sm text-gray-500 dark:text-gray-400 [.cyber_&]:text-gray-400">Use Arrow Keys to move, Space to place bomb</div>
@@ -261,11 +275,25 @@ export const Bomberman: React.FC = () => {
   );
 };
 
-const ControlButton = ({ onClick, icon, color = 'blue' }: { onClick: () => void, icon: string, color?: 'blue' | 'red' }) => (
+const ControlButton = ({ onAction, onMoveStart, onMoveEnd, icon, color = 'blue', isAction = false }: { onAction?: () => void, onMoveStart?: () => void, onMoveEnd?: () => void, icon: string, color?: 'blue' | 'red', isAction?: boolean }) => (
   <button 
-    className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg active:scale-95 transition-all ${color === 'blue' ? 'bg-white dark:bg-gray-700 [.cyber_&]:bg-gray-800 text-blue-600 dark:text-blue-400 [.cyber_&]:text-cyan-400 [.cyber_&]:border [.cyber_&]:border-cyan-500/30' : 'bg-red-50 dark:bg-red-900/30 [.cyber_&]:bg-red-900/20 text-red-600 dark:text-red-400 [.cyber_&]:text-red-400 border-2 border-red-100 dark:border-red-800 [.cyber_&]:border-red-500/30'}`}
-    onClick={(e) => { e.preventDefault(); onClick(); }}
-    onTouchStart={(e) => { e.preventDefault(); onClick(); }}
+    className={`flex items-center justify-center font-bold shadow-lg active:scale-95 transition-all rounded-full select-none touch-none
+      ${isAction 
+        ? 'w-24 h-24 text-4xl' 
+        : 'w-16 h-16 text-3xl'
+      }
+      ${color === 'blue' 
+        ? 'bg-white/80 dark:bg-gray-700/80 [.cyber_&]:bg-gray-800/80 text-blue-600 dark:text-blue-400 [.cyber_&]:text-cyan-400 [.cyber_&]:border [.cyber_&]:border-cyan-500/30 backdrop-blur-sm' 
+        : 'bg-red-500/90 dark:bg-red-700/80 [.cyber_&]:bg-red-600/80 text-white backdrop-blur-sm'
+      }`
+    }
+    onMouseDown={(e) => { if (onMoveStart || onAction) { e.preventDefault(); onMoveStart ? onMoveStart() : onAction?.(); } }}
+    onMouseUp={(e) => { if (onMoveEnd) { e.preventDefault(); onMoveEnd(); } }}
+    onMouseLeave={(e) => { if (onMoveEnd) { e.preventDefault(); onMoveEnd(); } }}
+    onTouchStart={(e) => { if (onMoveStart || onAction) { e.preventDefault(); onMoveStart ? onMoveStart() : onAction?.(); } }}
+    onTouchEnd={(e) => { if (onMoveEnd) { e.preventDefault(); onMoveEnd(); } }}
+    onTouchCancel={(e) => { if (onMoveEnd) { e.preventDefault(); onMoveEnd(); } }}
+    onContextMenu={(e) => { e.preventDefault(); }}
   >
     {icon}
   </button>

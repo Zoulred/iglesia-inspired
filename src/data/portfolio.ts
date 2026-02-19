@@ -6,8 +6,8 @@ export const profileData: Profile = {
   role: "Frontend Developer & UI/UX Designer",
   location: "Sison, Philippines",
   email: "johnreyiglesia308@gmail.com",
-  avatar: "/images/g6.jpg",
-  avatarHover: "/images/g4.jpg",
+  avatar: "/images/imgori1.jpg",
+  avatarHover: "/images/g6.jpg",
   bio: "Aspiring Mobile UI/UX Designer and Frontend Developer driven by a passion for crafting intuitive, engaging, and user-centered digital experiences. My methodology blends strong design principles with clean, efficient frontend development, resulting in interfaces that are not only visually compelling but also highly functional and seamless.\n\nI specialize in designing clear user mobile app flows and structured system flows to ensure smooth navigation and logical interactions. By carefully mapping user journeys and refining interface details, I create experiences that are intuitive, accessible, and focused on maximizing user satisfaction.",
   socials: [
     { platform: "GitHub", url: "https://github.com/Zoulred", icon: "github" },
@@ -21,7 +21,7 @@ export const profileData: Profile = {
 export const techStackData: TechStack[] = [
    {
     category: "Frontend",
-    skills: ["Html","CSS","Javascript", "TypeScript", "Tailwind CSS", "Next.js", ]
+    skills: ["Html","CSS","Javascript", "TypeScript", "React", "Tailwind CSS", "Next.js", ]
   },
   {
     category: "Design",
@@ -53,10 +53,42 @@ export const projectsData: Project[] = [
     title: "Bahay Kubo Augmented Reality App",
     description: "A capstone project showcasing augmented reality capabilities in a mobile Learning application.",
     image: "",
-    tags: ["Flutter", "Android Studio", "Figma", "Firebase"],
+    tags: ["Flutter", "Android Studio", "Figma", "Firebase/Supabase", "ARCore"],
     link: "https://bahaykuboar.netlify.app/",
     
-  }
+  },
+  {
+    id: "3",
+    title: "Location-Tracker",
+    description: "Track and display your IP address information and map location.",
+    image: "",
+    tags: ["JavaScript", "HTML", "CSS","Email.js" ],
+    link: "https://ip-hackermapv1.netlify.app/",
+  },
+  {
+    id: "4",
+    title: "Website Analyzer",
+    description: "Scan websites for vulnerabilities and security issues.",
+    image: "",
+    tags: ["JavaScript", "HTML", "CSS","Email.js" ],
+    link: "https://cyber-webscann.netlify.app/",
+  },
+  {
+    id: "5",
+    title: "Burger Ordering App",
+    description: "Burger Ordering App a mobile ordering app with real-time tracking.",
+    image: "",
+    tags: ["Figma",],
+    link: "https://www.figma.com/design/2l8qWRDN3wIneIlOD3hlEZ/Project-Burger-APP?node-id=0-1&t=m5PXlduo5IfG6ely-1",
+  },
+  { 
+    id: "6",
+    title: "G-Shock Mobile App",
+    description: "G-Shock Mobile App store UI/UX concept built in Figma.",
+    image: "",
+    tags: ["Figma",],
+    link: "https://www.figma.com/design/2l8qWRDN3wIneIlOD3hlEZ/G-Shock-Mobile-App?node-id=0-1&t=4Rq0IxBatprAPDIf-1",
+  },
 ];
 
 export const experienceData: Experience[] = [

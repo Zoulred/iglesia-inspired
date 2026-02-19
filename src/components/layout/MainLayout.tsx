@@ -1,11 +1,12 @@
 
 import React from 'react';
 import { useTheme } from '../../hooks/useTheme';
+import { ChatBot } from '../ChatBot';
 
 interface MainLayoutProps {
   children: React.ReactNode;
-  currentPage?: 'portfolio' | 'games';
-  onPageChange?: (page: 'portfolio' | 'games') => void;
+  currentPage?: 'portfolio' | 'games' | 'projects';
+  onPageChange?: (page: 'portfolio' | 'games' | 'projects') => void;
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage = 'portfolio', onPageChange }) => {
@@ -80,6 +81,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage = 
       <footer className="mt-12 pb-8 text-center text-gray-400 dark:text-gray-500 [.cyberhacker_&]:text-cyan-600 text-sm">
         <p>© {new Date().getFullYear()} • Iglesia Portfolio. All rights reserved.</p>
       </footer>
+      <ChatBot />
     </div>
   );
 };
